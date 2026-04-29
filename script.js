@@ -71,9 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 top: 100%;
                 left: 0;
                 width: 100%;
-                background: var(--white);
+                background: rgba(10, 10, 15, 0.95);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
                 padding: 2rem;
-                box-shadow: var(--shadow);
+                border-bottom: 1px solid rgba(255,255,255,0.06);
                 gap: 1.5rem;
             }
             
@@ -85,9 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             .menu-toggle span {
-                width: 30px;
+                width: 28px;
                 height: 2px;
-                background: var(--dark-accent);
+                background: var(--white);
                 transition: var(--transition);
             }
             
