@@ -522,12 +522,49 @@ footer a:hover { text-decoration: underline; }
     margin-top: 0.15rem;
 }
 
-/* Donor list */
+/* Donor list — auto-scroll container */
+.donors-list-wrapper {
+    position: relative;
+    max-height: 320px;
+    overflow: hidden;
+}
+
+/* Fade masks top & bottom */
+.donors-list-wrapper::before,
+.donors-list-wrapper::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 32px;
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.donors-list-wrapper::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--bg-page), transparent);
+}
+.donors-list-wrapper::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg-page), transparent);
+}
+
 .donors-list {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    max-height: 320px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+.donors-list::-webkit-scrollbar { display: none; }
 
 .donor-item {
     display: flex;
@@ -537,13 +574,16 @@ footer a:hover { text-decoration: underline; }
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    transition: all var(--transition);
-    animation: fadeInUp 0.3s ease forwards;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    animation: fadeInUp 0.4s ease forwards;
     opacity: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    flex-shrink: 0;
 }
 .donor-item:hover {
     border-color: var(--blue-border);
-    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,136,204,0.08);
 }
 
 @keyframes fadeInUp {

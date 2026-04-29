@@ -523,6 +523,11 @@ function renderDonors(donors) {
         `;
         list.appendChild(item);
     });
+
+    // Start auto-scroll after items render
+    if (donors.length > 4) {
+        setTimeout(() => initAutoScroll(), 600);
+    }
 }
 
 function updateDonorStats(stats) {
@@ -545,7 +550,6 @@ function escapeHtml(str) {
 
 async function loadDonors() {
     if (!WORKER_URL) {
-        // Worker chưa được cấu hình — ẩn section
         const section = document.getElementById('donors-section');
         if (section) section.style.display = 'none';
         return;
@@ -568,3 +572,77 @@ async function loadDonors() {
         document.getElementById('donors-empty').style.display = 'block';
     }
 }
+
+// ============================================================
+// Auto-Scroll Engine
+// ============================================================
+function initAutoScroll() {
+    const list = document.getElementById('donors-list');
+    if (!list) return;
+
+    const SPEED = 0.4;           // px per frame
+    const RESUME_DELAY = 2500;   // ms to wait before resuming after interaction
+
+    let scrollPos = 0;
+    let paused = false;
+    let userInteracting = false;
+    let resumeTimer = null;
+    let rafId = null;
+
+    function tick() {
+        if (!paused && !userInteracting) {
+            scrollPos += SPEED;
+            const maxScroll = list.scrollHeight - list.clientHeight;
+            if (maxScroll <= 0) return; // nothing to scroll
+
+            if (scrollPos >= maxScroll) {
+                scrollPos = 0; // loop back to top
+            }
+            list.scrollTop = scrollPos;
+        }
+        rafId = requestAnimationFrame(tick);
+    }
+
+    function pauseScroll() {
+        paused = true;
+        clearTimeout(resumeTimer);
+    }
+
+    function scheduleResume() {
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(() => {
+            scrollPos = list.scrollTop;
+            paused = false;
+            userInteracting = false;
+        }, RESUME_DELAY);
+    }
+
+    // Mouse hover: pause / resume
+    list.addEventListener('mouseenter', pauseScroll);
+    list.addEventListener('mouseleave', scheduleResume);
+
+    // Touch: pause on touch, resume after release
+    list.addEventListener('touchstart', () => {
+        userInteracting = true;
+        pauseScroll();
+    }, { passive: true });
+    list.addEventListener('touchend', () => {
+        userInteracting = false;
+        scheduleResume();
+    }, { passive: true });
+
+    // Manual scroll (wheel): sync position & pause briefly
+    list.addEventListener('wheel', () => {
+        pauseScroll();
+        userInteracting = true;
+        // Let default wheel scroll happen, then sync
+        requestAnimationFrame(() => {
+            scrollPos = list.scrollTop;
+        });
+        scheduleResume();
+    }, { passive: true });
+
+    // Start
+    rafId = requestAnimationFrame(tick);
+}
+
