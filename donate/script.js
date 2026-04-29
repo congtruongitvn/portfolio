@@ -579,33 +579,54 @@ async function loadDonors() {
 }
 
 // ============================================================
-// Auto-Scroll Engine
+// Auto-Scroll Engine — Seamless Infinite Loop
 // ============================================================
 function initAutoScroll() {
     const list = document.getElementById('donors-list');
     if (!list) return;
 
-    const SPEED = 0.4;           // px per frame
-    const RESUME_DELAY = 2500;   // ms to wait before resuming after interaction
+    // Duplicate all items to create seamless loop
+    const originalItems = Array.from(list.children);
+    originalItems.forEach(item => {
+        const clone = item.cloneNode(true);
+        clone.classList.add('donor-clone');
+        clone.style.animation = 'none';
+        clone.style.opacity = '1';
+        list.appendChild(clone);
+    });
+
+    // Calculate height of the original content block
+    const gap = parseFloat(getComputedStyle(list).gap) || 0;
+    let totalOriginalHeight = 0;
+    originalItems.forEach((el, i) => {
+        totalOriginalHeight += el.offsetHeight;
+        if (i < originalItems.length - 1) totalOriginalHeight += gap;
+    });
+    totalOriginalHeight += gap; // gap before clones start
+
+    // Disable smooth scroll for instant position resets
+    list.style.scrollBehavior = 'auto';
+
+    const SPEED = 0.4;
+    const RESUME_DELAY = 2500;
 
     let scrollPos = 0;
     let paused = false;
     let userInteracting = false;
     let resumeTimer = null;
-    let rafId = null;
 
     function tick() {
         if (!paused && !userInteracting) {
             scrollPos += SPEED;
-            const maxScroll = list.scrollHeight - list.clientHeight;
-            if (maxScroll <= 0) return; // nothing to scroll
 
-            if (scrollPos >= maxScroll) {
-                scrollPos = 0; // loop back to top
+            // Seamless reset — jump back without visual glitch
+            if (scrollPos >= totalOriginalHeight) {
+                scrollPos -= totalOriginalHeight;
             }
+
             list.scrollTop = scrollPos;
         }
-        rafId = requestAnimationFrame(tick);
+        requestAnimationFrame(tick);
     }
 
     function pauseScroll() {
@@ -617,16 +638,18 @@ function initAutoScroll() {
         clearTimeout(resumeTimer);
         resumeTimer = setTimeout(() => {
             scrollPos = list.scrollTop;
+            if (scrollPos >= totalOriginalHeight) {
+                scrollPos -= totalOriginalHeight;
+                list.scrollTop = scrollPos;
+            }
             paused = false;
             userInteracting = false;
         }, RESUME_DELAY);
     }
 
-    // Mouse hover: pause / resume
     list.addEventListener('mouseenter', pauseScroll);
     list.addEventListener('mouseleave', scheduleResume);
 
-    // Touch: pause on touch, resume after release
     list.addEventListener('touchstart', () => {
         userInteracting = true;
         pauseScroll();
@@ -636,18 +659,16 @@ function initAutoScroll() {
         scheduleResume();
     }, { passive: true });
 
-    // Manual scroll (wheel): sync position & pause briefly
     list.addEventListener('wheel', () => {
         pauseScroll();
         userInteracting = true;
-        // Let default wheel scroll happen, then sync
-        requestAnimationFrame(() => {
-            scrollPos = list.scrollTop;
-        });
+        requestAnimationFrame(() => { scrollPos = list.scrollTop; });
         scheduleResume();
     }, { passive: true });
 
-    // Start
-    rafId = requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
 }
+
+
+
 
