@@ -530,7 +530,7 @@ function renderDonors(donors) {
     });
 
     // Start auto-scroll after items render
-    if (donors.length > 4) {
+    if (donors.length > 2) {
         setTimeout(() => initAutoScroll(), 600);
     }
 }

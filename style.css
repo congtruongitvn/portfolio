@@ -28,7 +28,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background-color: var(--black);
     color: var(--white);
     line-height: 1.6;
