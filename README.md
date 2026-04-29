@@ -1,27 +1,80 @@
-# Portfolio Landing Page - Nguyễn Công Trường
+# truong.it — Portfolio & Open Source Projects
 
-Mẫu landing page cao cấp được thiết kế dựa trên thông tin từ `truong.it`.
+<p align="center">
+  <img src="favicon.png" width="64" height="64" alt="truong.it" />
+</p>
 
-## Hướng dẫn sử dụng
-1. Mở file `index.html` bằng trình duyệt để xem kết quả.
-2. **Hình ảnh:** Tôi đã tạo một ảnh chân dung chuyên nghiệp cho bạn. Hãy tìm file ảnh trong thư mục làm việc và đổi tên thành `avatar.jpg` để nó hiển thị ở mục Hero.
-3. **Chỉnh sửa thông tin:** Bạn có thể chỉnh sửa các nội dung văn bản trực tiếp trong file `index.html`.
+<p align="center">
+  <strong>Nguyễn Công Trường</strong><br>
+  Digital Marketing Specialist · Retail Operations · Open Source Developer
+</p>
 
-## Công nghệ sử dụng
-- HTML5 & CSS3 (Vanilla)
-- Javascript (Vanilla)
-- Google Fonts (Outfit)
-- Font Awesome 6.4
-
-## Tính năng
-- Thiết kế Responsive (Mobile-friendly)
-- Hiệu ứng Scroll Reveal (xuất hiện khi cuộn)
-- Sticky Navbar mượt mà
-- Marquee trượt ngang hiện đại
-- Form liên hệ phong cách Glassmorphism
+<p align="center">
+  <a href="https://congtruongitvn.github.io/portfolio/">🌐 Portfolio</a> ·
+  <a href="https://congtruongitvn.github.io/portfolio/donate/">❤️ Ủng hộ</a> ·
+  <a href="https://t.me/congtruongit">💬 Telegram</a> ·
+  <a href="https://fb.me/congtruongit">📘 Facebook</a>
+</p>
 
 ---
 
-### ❤️ Ủng hộ
+## 👋 Về tôi
 
-Nếu bạn thấy dự án hữu ích, hãy cân nhắc [ủng hộ truong.it](https://congtruongitvn.github.io/portfolio/donate/) để tôi tiếp tục tạo ra những sản phẩm giá trị cho cộng đồng.
+Tôi là **Nguyễn Công Trường**, hơn 10 năm kinh nghiệm trong lĩnh vực **Marketing**, **Công nghệ** và **Vận hành Bán lẻ**. Tôi đam mê xây dựng các công cụ phần mềm mã nguồn mở giúp cộng đồng giải quyết vấn đề thực tế.
+
+- 📍 Việt Nam
+- 💼 Digital Marketing Specialist & Founder
+- 🛠 Website Admin · Performance Ads · SEO · Content Creator
+- 💻 PowerShell · Shell Script · Electron · HTML/CSS/JS
+
+## 🚀 Dự án đang phát triển
+
+| Dự án | Mô tả | Link |
+|-------|--------|------|
+| **ZaloMulti-Win** | Quản lý & chạy đồng thời nhiều tài khoản Zalo Desktop trên Windows | [GitHub](https://github.com/congtruongitvn/ZaloMulti-Win) · [Demo](https://congtruongitvn.github.io/ZaloMulti-Win/) |
+| **ZaloMulti-Mac** | Nhân bản và chạy song song nhiều Zalo trên macOS | [GitHub](https://github.com/congtruongitvn/ZaloMulti-Mac) · [Demo](https://congtruongitvn.github.io/ZaloMulti-Mac/) |
+| **Messenger Premium** | Ứng dụng Messenger Desktop cho Windows (Electron) | [GitHub](https://github.com/congtruongitvn/messenger-pc) |
+| **Portfolio** | Trang cá nhân & trang Donate qua SePay | [Live](https://congtruongitvn.github.io/portfolio/) |
+
+## 📂 Cấu trúc repo này
+
+```
+portfolio/
+├── index.html          # Trang chủ portfolio
+├── style.css           # Giao diện trang chủ
+├── script.js           # Logic & hiệu ứng
+├── favicon.png         # Favicon
+├── donate/
+│   ├── index.html      # Trang ủng hộ (SePay Payment Gateway)
+│   ├── style.css       # Giao diện donate (Light/Dark theme)
+│   └── script.js       # Logic thanh toán & i18n (VN/EN, VNĐ/USD)
+└── README.md
+```
+
+## ✨ Tính năng trang Donate
+
+- 🌐 **Song ngữ** — Chuyển đổi Tiếng Việt / English
+- 💱 **Đa tiền tệ** — VNĐ / USD với các mức tiền gợi ý phù hợp
+- 🌙 **Chủ đề Sáng / Tối** — Tự động theo hệ thống + toggle thủ công
+- 🔐 **Bảo mật** — Secret key mã hoá XOR, không lưu plaintext
+- 📱 **Responsive** — Tương thích mọi thiết bị (Desktop / Tablet / Mobile)
+- ⚡ **Thanh toán** — QR Banking, Chuyển khoản, Thẻ quốc tế qua SePay
+
+## 📬 Liên hệ
+
+| Kênh | Địa chỉ |
+|------|---------|
+| 🌐 Website | [truong.it](https://truong.it) |
+| 💬 Telegram | [@congtruongit](https://t.me/congtruongit) |
+| 📘 Facebook | [congtruongit](https://fb.me/congtruongit) |
+| 🐙 GitHub | [congtruongitvn](https://github.com/congtruongitvn) |
+
+## ❤️ Ủng hộ
+
+Mỗi đóng góp đều giúp tôi tiếp tục tạo ra những sản phẩm giá trị cho cộng đồng.
+
+👉 **[Ủng hộ truong.it](https://congtruongitvn.github.io/portfolio/donate/)**
+
+---
+
+*Bản quyền © 2026 bởi truong.it. Phát triển với đam mê.*
