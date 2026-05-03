@@ -5,7 +5,9 @@ const BANK_CONFIG = {
     bank: 'KienLongBank',
     account: '101499100004603694',
     name: 'NGUYEN CONG TRUONG',
-    display_name: 'KienLongBank'
+    display_name: 'KienLongBank',
+    bank_code: 'KLB',
+    bank_bin: '970452'
 };
 
 // ============================================================
@@ -952,8 +954,8 @@ function openBankApp(bank) {
     const content = currentOrderCode || '';
 
     // Build VietQR deep link URL — full params to open transfer screen
-    // bn (beneficiary name) is critical for banks to show the transfer form
-    const deepLinkUrl = `https://dl.vietqr.io/pay?app=${encodeURIComponent(bank.appId)}&ba=${encodeURIComponent(BANK_CONFIG.account)}&am=${amount}&tn=${encodeURIComponent(content)}&bn=${encodeURIComponent(BANK_CONFIG.name)}&url=${encodeURIComponent(window.location.href)}`;
+    // acqId (bank BIN) + bn (beneficiary name) are critical for banks to show the transfer form
+    const deepLinkUrl = `https://dl.vietqr.io/pay?app=${encodeURIComponent(bank.appId)}&acqId=${BANK_CONFIG.bank_bin}&ba=${encodeURIComponent(BANK_CONFIG.account)}&am=${amount}&tn=${encodeURIComponent(content)}&bn=${encodeURIComponent(BANK_CONFIG.name)}&url=${encodeURIComponent(window.location.href)}`;
 
     closeBankSelector();
 
