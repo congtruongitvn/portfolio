@@ -219,6 +219,22 @@
                     </div>
                 </div>
 
+                <!-- Action Buttons -->
+                <div class="checkout-actions" id="checkout-actions">
+                    <button class="checkout-action-btn" id="btn-download-qr" onclick="downloadQR()">
+                        <i class="fas fa-download"></i>
+                        <span data-i18n="download_qr">Tải QR</span>
+                    </button>
+                    <button class="checkout-action-btn" id="btn-copy-stk" onclick="copySTK()">
+                        <i class="fas fa-copy"></i>
+                        <span data-i18n="copy_stk">Chép STK</span>
+                    </button>
+                    <button class="checkout-action-btn accent" id="btn-open-bank" onclick="openBankSelector()">
+                        <i class="fas fa-mobile-screen-button"></i>
+                        <span data-i18n="open_bank_app">Mở App CK</span>
+                    </button>
+                </div>
+
                 <div class="checkout-status" id="checkout-status">
                     <div class="status-pulse"></div>
                     <span data-i18n="waiting_payment">Đang chờ thanh toán...</span>
@@ -237,6 +253,28 @@
                 <div class="success-amount" id="success-amount">0₫</div>
                 <button class="donate-btn" onclick="closeCheckout()" data-i18n="close_btn">Đóng</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Bank Selector Modal -->
+    <div class="bank-selector-overlay" id="bank-selector-overlay">
+        <div class="bank-selector-modal">
+            <div class="bank-selector-header">
+                <h3 data-i18n="select_bank">Chọn ngân hàng</h3>
+                <button class="checkout-close" onclick="closeBankSelector()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="bank-search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="bank-search" data-i18n-placeholder="search_bank" placeholder="Tìm ngân hàng..." autocomplete="off">
+            </div>
+            <div class="bank-list" id="bank-list">
+                <div class="bank-list-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+            </div>
+            <p class="bank-note" data-i18n="bank_note">Chọn ngân hàng bạn đang dùng để mở app chuyển khoản nhanh</p>
         </div>
     </div>
 

@@ -58,7 +58,17 @@ const TRANSLATIONS = {
         payment_thanks: 'Cảm ơn bạn đã ủng hộ truong.it',
         close_btn: 'Đóng',
         copied: 'Đã sao chép!',
-        expired: 'Hết thời gian thanh toán'
+        expired: 'Hết thời gian thanh toán',
+        download_qr: 'Tải QR',
+        copy_stk: 'Chép STK',
+        open_bank_app: 'Mở App CK',
+        select_bank: 'Chọn ngân hàng',
+        search_bank: 'Tìm ngân hàng...',
+        bank_note: 'Chọn ngân hàng bạn đang dùng để mở app chuyển khoản nhanh',
+        stk_copied: 'Đã chép số tài khoản!',
+        qr_downloaded: 'Đã tải mã QR!',
+        bank_not_found: 'Không tìm thấy ngân hàng',
+        bank_app_opened: 'Đã mở app ngân hàng'
     },
     en: {
         page_title: 'Support truong.it',
@@ -101,7 +111,17 @@ const TRANSLATIONS = {
         payment_thanks: 'Thank you for supporting truong.it',
         close_btn: 'Close',
         copied: 'Copied!',
-        expired: 'Payment expired'
+        expired: 'Payment expired',
+        download_qr: 'Save QR',
+        copy_stk: 'Copy Acc.',
+        open_bank_app: 'Open App',
+        select_bank: 'Select bank',
+        search_bank: 'Search bank...',
+        bank_note: 'Select your bank to open the app for quick transfer',
+        stk_copied: 'Account number copied!',
+        qr_downloaded: 'QR code downloaded!',
+        bank_not_found: 'No bank found',
+        bank_app_opened: 'Bank app opened'
     }
 };
 
@@ -770,3 +790,187 @@ function initAutoScroll() {
 
     requestAnimationFrame(tick);
 }
+
+// ============================================================
+// Download QR Code
+// ============================================================
+function downloadQR() {
+    const t = TRANSLATIONS[currentLang];
+    const qrImg = document.getElementById('checkout-qr-img');
+    if (!qrImg || !qrImg.src) return;
+
+    // Create a canvas to draw the QR image
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = qrImg.naturalWidth || 300;
+    canvas.height = qrImg.naturalHeight || 300;
+    ctx.drawImage(qrImg, 0, 0);
+
+    // Download as PNG
+    const link = document.createElement('a');
+    link.download = `QR_Donate_${currentOrderCode || 'truong-it'}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    showToast(t.qr_downloaded, 'success');
+
+    // Visual feedback on button
+    const btn = document.getElementById('btn-download-qr');
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1500);
+}
+
+// ============================================================
+// Copy STK (Account Number)
+// ============================================================
+function copySTK() {
+    const t = TRANSLATIONS[currentLang];
+    navigator.clipboard.writeText(BANK_CONFIG.account).then(() => {
+        showToast(t.stk_copied, 'success');
+
+        // Visual feedback on button
+        const btn = document.getElementById('btn-copy-stk');
+        const originalIcon = btn.querySelector('i');
+        const originalText = btn.querySelector('span');
+        
+        originalIcon.className = 'fas fa-check';
+        originalText.textContent = t.copied;
+        btn.classList.add('copied');
+
+        setTimeout(() => {
+            originalIcon.className = 'fas fa-copy';
+            originalText.textContent = t.copy_stk;
+            btn.classList.remove('copied');
+        }, 1500);
+    });
+}
+
+// ============================================================
+// Bank Selector — VietQR Deep Link
+// ============================================================
+let bankAppsCache = null;
+
+function detectPlatform() {
+    const ua = navigator.userAgent || '';
+    if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
+    if (/Android/i.test(ua)) return 'android';
+    return 'desktop';
+}
+
+async function loadBankApps() {
+    if (bankAppsCache) return bankAppsCache;
+
+    const platform = detectPlatform();
+    let apiUrl;
+
+    if (platform === 'ios') {
+        apiUrl = 'https://api.vietqr.io/v2/ios-app-deeplinks';
+    } else {
+        apiUrl = 'https://api.vietqr.io/v2/android-app-deeplinks';
+    }
+
+    try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        bankAppsCache = (data.apps || []).sort((a, b) => b.monthlyInstall - a.monthlyInstall);
+        return bankAppsCache;
+    } catch (err) {
+        console.error('Failed to load bank apps:', err);
+        return [];
+    }
+}
+
+function renderBankList(banks) {
+    const t = TRANSLATIONS[currentLang];
+    const list = document.getElementById('bank-list');
+    list.innerHTML = '';
+
+    if (banks.length === 0) {
+        list.innerHTML = `<div class="bank-list-empty"><i class="fas fa-search" style="font-size:1.5rem;opacity:0.3;margin-bottom:0.5rem;display:block;"></i>${t.bank_not_found}</div>`;
+        return;
+    }
+
+    banks.forEach(bank => {
+        const item = document.createElement('div');
+        item.className = 'bank-item';
+        item.innerHTML = `
+            <img class="bank-item-logo" src="${bank.appLogo}" alt="${bank.appName}" loading="lazy" onerror="this.style.display='none'">
+            <div class="bank-item-info">
+                <div class="bank-item-name">${escapeHtml(bank.appName.replace(/^\u200e/, ''))}</div>
+                <div class="bank-item-full">${escapeHtml(bank.bankName)}</div>
+            </div>
+            <i class="fas fa-chevron-right bank-item-arrow"></i>
+        `;
+        item.addEventListener('click', () => openBankApp(bank));
+        list.appendChild(item);
+    });
+}
+
+async function openBankSelector() {
+    const overlay = document.getElementById('bank-selector-overlay');
+    overlay.classList.add('active');
+
+    // Load bank list
+    const banks = await loadBankApps();
+    renderBankList(banks);
+
+    // Set up search
+    const searchInput = document.getElementById('bank-search');
+    searchInput.value = '';
+    searchInput.focus();
+
+    // Remove any previous listener to avoid duplicates
+    searchInput.oninput = () => {
+        const query = searchInput.value.toLowerCase().trim();
+        const filtered = banks.filter(b =>
+            b.appName.toLowerCase().includes(query) ||
+            b.bankName.toLowerCase().includes(query) ||
+            b.appId.toLowerCase().includes(query)
+        );
+        renderBankList(filtered);
+    };
+}
+
+function closeBankSelector() {
+    const overlay = document.getElementById('bank-selector-overlay');
+    overlay.classList.remove('active');
+}
+
+function openBankApp(bank) {
+    const t = TRANSLATIONS[currentLang];
+    const preset = CURRENCY_PRESETS[currentCurrency];
+    const amount = parseInt(selectedAmount);
+    const content = currentOrderCode || '';
+
+    // Build VietQR deep link URL
+    const params = new URLSearchParams({
+        app: bank.appId,
+        ba: BANK_CONFIG.account,
+        am: amount.toString(),
+        tn: content
+    });
+
+    const deepLinkUrl = `https://dl.vietqr.io/pay?${params.toString()}`;
+
+    // Open deep link
+    window.open(deepLinkUrl, '_blank');
+    closeBankSelector();
+
+    showToast(t.bank_app_opened, 'success');
+}
+
+// Close bank selector on overlay click or Escape
+document.addEventListener('DOMContentLoaded', () => {
+    const bankOverlay = document.getElementById('bank-selector-overlay');
+    if (bankOverlay) {
+        bankOverlay.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeBankSelector();
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('bank-selector-overlay')?.classList.contains('active')) {
+            closeBankSelector();
+        }
+    });
+});
