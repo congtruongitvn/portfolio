@@ -506,6 +506,70 @@ function copyText(el) {
 }
 
 // ============================================================
+// Download QR Code
+// ============================================================
+function downloadQR() {
+    const t = TRANSLATIONS[currentLang];
+    const qrImg = document.getElementById('checkout-qr-img');
+    if (!qrImg || !qrImg.src) return;
+
+    // Create a temporary canvas to draw the QR image
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Use a new image with crossOrigin to avoid tainted canvas
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        ctx.drawImage(img, 0, 0);
+
+        // Convert to blob and download
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                // Fallback: open image in new tab
+                window.open(qrImg.src, '_blank');
+                return;
+            }
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `QR_Donate_${currentOrderCode || 'truong-it'}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showToast(t.qr_downloaded, 'success');
+        }, 'image/png');
+    };
+    img.onerror = () => {
+        // Fallback: open image in new tab if CORS blocked
+        window.open(qrImg.src, '_blank');
+    };
+    img.src = qrImg.src;
+}
+
+// ============================================================
+// Copy STK (Account Number)
+// ============================================================
+function copySTK() {
+    const t = TRANSLATIONS[currentLang];
+    navigator.clipboard.writeText(BANK_CONFIG.account).then(() => {
+        showToast(t.stk_copied, 'success');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = BANK_CONFIG.account;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast(t.stk_copied, 'success');
+    });
+}
+
+// ============================================================
 // Toast
 // ============================================================
 function showToast(message, type = 'info') {
